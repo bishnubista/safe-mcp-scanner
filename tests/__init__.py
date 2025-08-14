@@ -1,0 +1,1 @@
+"""Test package for SAFE-MCP Scanner."""
