@@ -4,14 +4,18 @@ from typing import Dict, Type
 
 from .reporters.base import BaseReporter
 from .reporters.json_reporter import JSONReporter
+from .reporters.sarif import SARIFReporter
+from .reporters.text import TextReporter
 
 
 class ReporterFactory:
     """Factory for creating result reporters based on format."""
-    
+
     def __init__(self) -> None:
         self._reporters: Dict[str, Type[BaseReporter]] = {
             "json": JSONReporter,
+            "sarif": SARIFReporter,
+            "text": TextReporter,
         }
     
     def register_reporter(self, format_name: str, reporter_class: Type[BaseReporter]) -> None:

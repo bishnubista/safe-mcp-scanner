@@ -7,3 +7,9 @@ __all__ = ["BaseTechnique"]
 
 # Registry for technique discovery
 TECHNIQUE_REGISTRY: Dict[str, BaseTechnique] = {}
+
+# Import all techniques to register them
+# (must come after TECHNIQUE_REGISTRY is defined to avoid circular imports)
+from . import command_injection
+from . import malicious_tools
+from . import hardcoded_credentials

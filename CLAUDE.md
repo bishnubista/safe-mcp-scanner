@@ -4,15 +4,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Python-based vulnerability scanner for MCP (Model Context Protocol) servers, implementing the SAFE-MCP framework from https://github.com/fkautz/safe-mcp. The scanner detects 77 documented attack techniques across 14 tactical categories, providing comprehensive security analysis for MCP server implementations.
+This is a Python-based vulnerability scanner for MCP (Model Context Protocol) servers. Currently in **alpha (v0.1.0)**, the scanner focuses on detecting critical security vulnerabilities in MCP server implementations and configurations.
 
-### SAFE-MCP Framework Foundation
-The scanner is built upon the SAFE-MCP framework which:
-- Adapts MITRE ATT&CK methodology specifically for MCP environments
-- Documents adversary tactics, techniques, and procedures (TTPs) for MCP
-- Provides actionable mitigations for each identified technique
-- Maps techniques to corresponding MITRE ATT&CK frameworks
-- Enables threat assessment, developer mitigations, compliance mapping, and red team testing
+### Current Implementation Status
+
+**Core Features (Complete):**
+- ✅ Scanner architecture and orchestration
+- ✅ CLI interface with Click
+- ✅ Configuration system (YAML/JSON)
+- ✅ File discovery for MCP-specific files
+- ✅ JSON reporter
+- ✅ SARIF reporter (CI/CD integration)
+- ✅ Text reporter (human-readable output)
+
+**Active Detectors (2 working):**
+- ✅ SAFE-T1001: Malicious Tool Descriptions (Prompt Security - High severity)
+- ✅ SAFE-T1101: Command Injection (Code Execution - Critical severity)
+
+**In Development:**
+- 🚧 Hardcoded credentials detector
+- 🚧 Path traversal detector
+- 🚧 Insecure transport detector
+- 🚧 Python AST analysis engine
+- 🚧 JavaScript AST analysis engine
+
+**Planned Features:**
+- Supply chain vulnerability scanning
+- Container security analysis (Dockerfile/K8s)
+- HTML dashboard reporter
+- Advanced data flow analysis
+- 20+ additional MCP-specific detectors
+
+See [REVISED_APPROACH.md](./REVISED_APPROACH.md) and [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) for detailed roadmap.
 
 ## Development Commands
 
@@ -70,24 +93,40 @@ src/safe_mcp_scanner/
 ```
 
 ### Key Detection Areas
-Based on the SAFE-MCP framework's 14 tactical categories:
-- **Initial Access**: Malicious tool descriptions, supply chain compromise, trojanized packages
-- **Execution**: Command injection, tool poisoning, prompt injection, over-privileged tools
-- **Credential Access**: OAuth token theft, audience confusion, token forwarding, environment harvesting
-- **Persistence**: Configuration tampering, backdoor installation, privilege escalation
-- **Defense Evasion**: Log manipulation, security tool bypass, obfuscation techniques
-- **Discovery**: System reconnaissance, network enumeration, credential discovery
-- **Collection**: Data harvesting, screen capture, clipboard access
-- **Command and Control**: C2 communication, tunneling, protocol abuse
-- **Exfiltration**: Data theft, covert channels, automated collection
-- **Impact**: Data destruction, defacement, denial of service
+
+**Currently Implemented:**
+- **Prompt Security** (SAFE-T1001): Malicious tool descriptions, credential phishing attempts
+- **Code Execution** (SAFE-T1101): Command injection, unsafe subprocess calls
+
+**In Development:**
+- **Configuration Security**: Hardcoded credentials, insecure transport, debug mode
+- **Data Access**: Path traversal, unrestricted file access, SQL injection
+- **Supply Chain**: Vulnerable dependencies, package validation
+
+**Planned Future Categories:**
+- Persistence mechanisms
+- Defense evasion techniques
+- Discovery and reconnaissance
+- Data collection methods
+- Command and control
+- Data exfiltration
+- Impact and denial of service
 
 ### Detection Methods
-- **Static Code Analysis**: AST parsing for Python/JavaScript MCP servers
-- **Configuration Analysis**: JSON/YAML MCP config scanning
-- **Pattern Matching**: Regex-based malicious pattern detection
-- **Package Analysis**: Supply chain vulnerability scanning
-- **Container Security**: Dockerfile and image analysis
+
+**Currently Active:**
+- ✅ **Pattern Matching**: Regex-based detection for known vulnerability patterns
+- ✅ **Configuration Analysis**: JSON/YAML MCP config file parsing and validation
+- ✅ **File Discovery**: MCP-specific file identification and categorization
+
+**In Development:**
+- 🚧 **AST Analysis**: Abstract Syntax Tree parsing for Python and JavaScript
+- 🚧 **Semantic Analysis**: Context-aware code analysis for deeper insights
+
+**Planned:**
+- 📋 **Data Flow Analysis**: Track tainted data through code
+- 📋 **Package Analysis**: Dependency vulnerability scanning
+- 📋 **Container Security**: Dockerfile and image analysis
 
 ## Target Scan Configurations
 - `claude_desktop_config.json` - Claude Desktop MCP configurations
@@ -95,24 +134,46 @@ Based on the SAFE-MCP framework's 14 tactical categories:
 - `.mcp/` directories - MCP project folders
 - Docker Compose and Kubernetes manifests with MCP services
 
-## Development Priorities
-1. Core scanner framework and CLI interface
-2. High-impact techniques from SAFE-MCP framework:
-   - Initial Access techniques (malicious tool descriptions, supply chain compromise)
-   - Execution techniques (command injection, tool poisoning, over-privileged tools)
-   - Credential Access techniques (OAuth theft, environment variable harvesting)
-3. JSON/SARIF reporting with SAFE-MCP technique ID mapping
-4. Configuration file analysis for MCP servers
-5. Supply chain scanning for MCP package dependencies
-6. Container security checks for MCP deployments
-7. Advanced features and CI/CD integrations with MITRE ATT&CK correlation
+## Development Priorities (Current Milestone)
 
-## SAFE-MCP Integration
-The scanner maps each detection to specific SAFE-MCP technique IDs, enabling:
-- Standardized threat categorization using SAFE-MCP taxonomy
-- Actionable mitigation recommendations from the framework
-- Correlation with MITRE ATT&CK techniques for broader security context
-- Regular updates as new techniques emerge in the MCP threat landscape
+**Milestone 1 - Fix the Foundation (In Progress):**
+1. ✅ Core scanner framework and CLI interface (Complete)
+2. ✅ JSON/SARIF/Text reporting (Complete)
+3. 🚧 Hardcoded credentials detector (In Progress)
+4. 🚧 Path traversal detector (In Progress)
+5. 🚧 Insecure transport detector (Planned)
+6. ✅ Documentation updates to reflect reality (Complete)
+
+**Milestone 2 - Enhanced Detection (Next):**
+1. Python AST analysis engine
+2. JavaScript AST analysis engine
+3. Expand to 10 total working detectors
+4. Improve detection accuracy with semantic analysis
+
+**Milestone 3 - Production Ready:**
+1. Supply chain scanning for dependencies
+2. Container security analysis
+3. HTML dashboard reporter
+4. GitHub Action for automated scanning
+5. 30+ detectors across all MCP security categories
+
+See [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) for detailed task breakdown.
+
+## Detector Taxonomy
+
+The scanner uses MCP-specific detector IDs rather than forcing MITRE ATT&CK mapping:
+
+**Current Naming Convention:**
+- `SAFE-T1001` through `SAFE-T1106`: Initial implementation (being migrated)
+- Future detectors will use MCP-specific categories:
+  - `MCP-CONFIG-xxx`: Configuration security issues
+  - `MCP-EXEC-xxx`: Code execution vulnerabilities
+  - `MCP-DATA-xxx`: Data access issues
+  - `MCP-PROMPT-xxx`: Prompt security concerns
+  - `MCP-SUPPLY-xxx`: Supply chain vulnerabilities
+  - `MCP-NET-xxx`: Network security issues
+
+This approach provides clearer categorization for MCP-specific vulnerabilities while maintaining compatibility with existing detectors.
 
 ## Security Context
 This is a **defensive security tool** designed to identify vulnerabilities in MCP servers. All detection patterns and techniques are focused on helping developers secure their MCP implementations against the attack techniques documented in the SAFE-MCP framework.
